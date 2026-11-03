@@ -1,4 +1,4 @@
-name: UMBRAL R2 verification utility
+name: UMBRAL R2 and Cloud adapter contract checks
 on:
   push:
     paths:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Test R2 verifier without model calls or credentials
+      - name: Offline verification of R2 and Cloud worker adapters
         run: |
           cd ops/umbral/r2
-          python -m unittest discover -v -p "test_verify_r2.py"
+          python -m unittest discover -v -p "test_*.py"
