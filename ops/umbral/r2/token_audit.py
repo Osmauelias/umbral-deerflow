@@ -9,7 +9,7 @@ import re
 import subprocess
 import sys
 
-USAGE = re.compile(r"LLM token usage: input=(\\d+) output=(\\d+) total=(\\d+)")
+USAGE = re.compile(r"LLM token usage: input=(\d+) output=(\d+) total=(\d+)")
 
 def extract(text: str) -> list[dict]:
     return [
@@ -38,7 +38,7 @@ def main(argv=None) -> int:
     parser.add_argument("--limit", type=int, default=20)
     parser.add_argument("--max-input", type=int, default=12000)
     a = parser.parse_args(argv)
-    if a.limit <= 0 or a.max_input <= 0 or not re.fullmatch(r"\\d+[smh]", a.since):
+    if a.limit <= 0 or a.max_input <= 0 or not re.fullmatch(r"\d+[smh]", a.since):
         print("INVALID_PARAMETERS", file=sys.stderr)
         return 2
     try:
@@ -53,7 +53,7 @@ def main(argv=None) -> int:
     if result.returncode != 0:
         print("BLOCKED_DOCKER_LOG_READ", file=sys.stderr)
         return 2
-    data = extract(result.stdout + "\\n" + result.stderr)
+    data = extract(result.stdout + "\n" + result.stderr)
     report = summarize(data, a.limit, a.max_input)
     print(json.dumps(report, indent=2))
     return 0 if report["status"] == "MEASURED_UNATTRIBUTED" else 2
