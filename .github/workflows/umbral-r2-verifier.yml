@@ -1,0 +1,26 @@
+name: UMBRAL R2 verification utility
+on:
+  push:
+    paths:
+      - "ops/umbral/r2/**"
+      - ".github/workflows/umbral-r2-verifier.yml"
+  pull_request:
+    paths:
+      - "ops/umbral/r2/**"
+      - ".github/workflows/umbral-r2-verifier.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify-tool:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Test R2 verifier without model calls or credentials
+        run: |
+          cd ops/umbral/r2
+          python -m unittest discover -v -p "test_verify_r2.py"
