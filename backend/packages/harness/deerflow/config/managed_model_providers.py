@@ -84,6 +84,11 @@ def _capabilities(provider: str, model: str) -> dict[str, Any]:
     thinking/vision/effort is model-specific. Do not broaden these to substrings.
     """
     result: dict[str, Any] = {"reasoning": {"thinking": "unsupported", "dialect": "none"}}
+    if provider == "openai" and model.startswith("gpt-6"):
+        result.update(
+            use_responses_api=True,
+            output_version="responses/v1"
+        )
     if provider == "openai" and model in {"gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano"}:
         result["supports_vision"] = True
     elif provider == "anthropic" and model in {"claude-sonnet-4-20250514", "claude-opus-4-20250514", "claude-sonnet-4-5-20250929"}:
