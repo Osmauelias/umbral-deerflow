@@ -99,3 +99,17 @@ No considerar la documentación, GitHub issue o PR como ejecución Cloud exitosa
 **Arquitectura (asistente):** contratos, rutas, pruebas, auditoría, commits, clasificación de fallos.
 **Servicios:** sandbox y runners ejecutan tests; GitHub conserva activos; proveedores facturan/ejecutan dentro del acceso autorizado.
 **Operador:** solo aprobación de gasto, permisos Cloud y merge/proyecto. No copiado manual de contexto.
+
+## Actualización técnica — 2026-11-03
+La rama también incluye:
+- `ops/umbral/r2/token_audit.py`: extrae del Gateway las líneas existentes `LLM token usage` por llamada; no imprime logs crudos ni hace llamadas API. No atribuye modelos sin trace_id y no confunde métricas con facturación. Corrida real en Codespaces todavía pendiente.
+- `ops/umbral/r2/cloud_smoke.py`: prueba programática con SDK oficial `client.beta.agents.sessions.create(..., environment={"type":"openai_hosted"})`. Solo envía API con `--execute`, requiere `OPENAI_API_KEY` de un proyecto con permisos `api.agents.read/write`, `api.responses.write`; descarga ZIP publicado con ruta contractual y calcula SHA-256. Un ZIP descargado tampoco prueba por sí solo que los tests se ejecutaron sin revisar el registro, por eso su resultado es parcial.
+- Tests sin red para los dos módulos, incorporados al flujo CI de esta rama.
+**No se ha autorizado ni ejecutado llamada Agents API, no se ha conectado ChatGPT-plan Codex Cloud y no hay promesa de límite de costo duro.**
+
+Comandos de inspección, **sin gasto API** (desde checkout de la rama):
+```sh
+python3 ops/umbral/r2/token_audit.py --since 60m
+python3 ops/umbral/r2/cloud_smoke.py
+```
+Comandos con efectos requieren aprobación humana previa. El verificador R2 puede ejecutar Python generado por modelo, pero solo dentro de Docker con filesystem de código read-only, sin red y sin privilegios.
